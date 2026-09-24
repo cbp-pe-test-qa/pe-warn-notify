@@ -7,7 +7,7 @@ on:
       - "**"
   workflow_dispatch:
 jobs:
-  build:
+  scan-job:
     steps:
       - id: make-input
         name: Build a test policy subject
@@ -35,16 +35,16 @@ jobs:
             }
           }]
           EOF
-      - name: Print policy input
-        uses: docker://alpine:latest
-        shell: sh
-        env:
-          ORG: ${{ cloudbees.org.id }}
-          ACCESS_KEY: ${{ cloudbees.api.token }}
-          URL: ${{ cloudbees.api.url }}
-          POLICY_SUBJECT: ${{ steps.make-input.outputs.policy-subject }}
-        run: |
-          echo "$URL"
-          echo "$ORG"
-          echo "Authorization: Bearer $ACCESS_KEY"
-          echo "$POLICY_SUBJECT"
+
+  independent-job:
+    steps:
+      - name: Run step
+        uses: docker://alpine:3.18
+        run: echo "independent-job running"
+  post-scan-job:
+    needs:
+      - scan-job
+    steps:
+      - name: Run step
+        uses: docker://alpine:3.18
+        run: echo "post-scan-job running"
