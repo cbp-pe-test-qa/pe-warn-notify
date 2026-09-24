@@ -8,6 +8,7 @@ on:
   workflow_dispatch:
 jobs:
   scan-job:
+    policy-subject: ${{ steps.make-input.outputs.policy-subject }}
     steps:
       - id: make-input
         name: Build a test policy subject
